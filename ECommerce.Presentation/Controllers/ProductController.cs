@@ -1,0 +1,46 @@
+﻿using ECommerce.ServiceAbstraction;
+using ECommerce.Shared.ProductDtos;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace ECommerce.Presentation.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class ProductController(IProductService productService) : ControllerBase
+{
+    [HttpGet]
+    //Get: BaseUrl/api/products
+    public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProducts()
+    {
+        var products = await productService.GetAllProductsAcync();
+        return Ok(products);
+    }
+    [HttpGet("{id}")]
+    //Get: BaseUrl/api/products/id
+    public async Task<ActionResult<ProductDTO?>> GetProductById(int id)
+    {
+        var product = await productService.GetByIdAcync(id);
+        if (product is null) return NotFound();
+        return Ok(product);
+    }
+
+    [HttpGet("brands")]
+    //Get: BaseUrl/api/products/brands
+    public async Task<ActionResult<IEnumerable<BrandDTO>>> GetBrands()
+    {
+        var brands = await productService.GetAllBrandsAcync();
+        return Ok(brands);
+    }
+    [HttpGet("types")]
+    //Get: BaseUrl/api/products/types
+    public async Task<ActionResult<IEnumerable<TypeDTO>>> GetTypes()
+    {
+        var types = await productService.GetAllTypesAcync();
+        return Ok(types);
+    }
+
+
+}
