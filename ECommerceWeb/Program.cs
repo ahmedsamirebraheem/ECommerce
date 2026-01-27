@@ -30,8 +30,9 @@ public class Program
         });
 
         // 3. ≈⁄œ«œ Mapster («·ÿ—Ìﬁ… «·ÌœÊÌ… «·„÷„Ê‰… · Ã‰» √Œÿ«¡ «·„ﬂ »« )
-        var config = TypeAdapterConfig.GlobalSettings;
-        config.Scan(typeof(ProductProfile).Assembly); // »Ì”Õ» ﬂ· «·‹ Profiles „‰ „‘—Ê⁄ «·‹ Service
+        var config = new TypeAdapterConfig(); // Instance ÃœÌœ »œ· GlobalSettings
+        config.Scan(typeof(ProductProfile).Assembly);
+
         builder.Services.AddSingleton(config);
         builder.Services.AddScoped<IMapper, ServiceMapper>();
 

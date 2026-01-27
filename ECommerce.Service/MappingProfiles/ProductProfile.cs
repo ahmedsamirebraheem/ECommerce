@@ -15,8 +15,6 @@ public class ProductProfile : IRegister
     {
         config.NewConfig<Product, ProductDTO>()
             .Map(dest => dest.ProductBrand, src => src.ProductBrand.Name)
-            .Map(dest => dest.ProductType, src => src.ProductType.Name)
-            .Map(dest => dest.PictureUrl, src =>
-                MapContext.Current.GetService<IPictureUrlResolver>().Resolve(src.PictureUrl));
+            .Map(dest => dest.ProductType, src => src.ProductType.Name);
     }
 }

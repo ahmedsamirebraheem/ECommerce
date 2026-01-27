@@ -15,12 +15,20 @@ public class GenericRepository<T,Tkey>(StoreDbContext dbContext) : IGenericRepos
 
     public async Task<IEnumerable<T>> GetAllAcync() => await dbContext.Set<T>().ToListAsync();
 
-
+    public async Task<IEnumerable<T>> GetAllAcync(ISpecifications<T, Tkey> specifications)
+    {
+        return await SpecificationEvaluator.CreateQuery(dbContext.Set<T>(), specifications).ToListAsync();
+    }
     public async Task<T?> GetByIdAcync(Tkey id) => await dbContext.Set<T>().FindAsync(id);
-    
+    public async Task<T?> GetByIdAsync(ISpecifications<T, Tkey> specifications)
+    {
+        return await SpecificationEvaluator.CreateQuery<T, Tkey>(dbContext.Set<T>(), specifications)
+            .FirstOrDefaultAsync();
+    }
+
 
     public void Update(T entity) => dbContext.Set<T>().Update(entity);
     
     public void Remove(T entity) => dbContext.Set<T>().Remove(entity);
-    
+
 }

@@ -1,4 +1,5 @@
 ﻿using ECommerce.ServiceAbstraction;
+using ECommerce.Shared;
 using ECommerce.Shared.ProductDtos;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -13,9 +14,9 @@ public class ProductController(IProductService productService) : ControllerBase
 {
     [HttpGet]
     //Get: BaseUrl/api/products
-    public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProducts()
+    public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProducts([FromQuery]ProductQueryParams queryParams)
     {
-        var products = await productService.GetAllProductsAcync();
+        var products = await productService.GetAllProductsAcync(queryParams);
         return Ok(products);
     }
     [HttpGet("{id}")]
