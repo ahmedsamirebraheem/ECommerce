@@ -10,59 +10,63 @@ using Mapster;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 
-namespace ECommerceWeb
+namespace ECommerceWeb;
+
+public class Program
 {
-    public class Program
+    public static async Task Main(string[] args)
     {
-        // «· ’ÕÌÕ:  €ÌÌ— void ≈·Ï Task
-        public static async Task Main(string[] args)
+        var builder = WebApplication.CreateBuilder(args);
+
+        // 1.  ”ÃÌ· «·Œœ„«  «·√”«”Ì… (Controllers & Swagger)
+        builder.Services.AddControllers();
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
+
+        // 2. ﬁ«⁄œ… «·»Ì«‰« 
+        builder.Services.AddDbContext<StoreDbContext>(options =>
         {
-            var builder = WebApplication.CreateBuilder(args);
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+        });
 
-            // 1.  ”ÃÌ· «·Œœ„«  «·√”«”Ì…
-            builder.Services.AddControllers();
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+        // 3. ≈⁄œ«œ Mapster («·ÿ—Ìﬁ… «·ÌœÊÌ… «·„÷„Ê‰… · Ã‰» √Œÿ«¡ «·„ﬂ »« )
+        var config = TypeAdapterConfig.GlobalSettings;
+        config.Scan(typeof(ProductProfile).Assembly); // »Ì”Õ» ﬂ· «·‹ Profiles „‰ „‘—Ê⁄ «·‹ Service
+        builder.Services.AddSingleton(config);
+        builder.Services.AddScoped<IMapper, ServiceMapper>();
 
-            builder.Services.AddDbContext<StoreDbContext>(options =>
+        // 4.  ”ÃÌ· Œœ„«  «·‹ Dependency Injection (›ﬂ «·ﬂÊ„‰  Â‰«)
+        builder.Services.AddScoped<IDataInitializer, DataInitializer>();
+        builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+        builder.Services.AddScoped<IProductService, ProductService>();
+
+        //  ”ÃÌ· «·‹ Resolver «·ÃœÌœ ﬂŒœ„…
+        builder.Services.AddScoped<IPictureUrlResolver, PictureUrlResolver>();
+
+        var app = builder.Build();
+
+        // 5.  ‘€Ì· «·„«ÌÃ—Ì‘‰ Ê«·‹ Seed
+        await app.MigrateDatabaseAsync();
+        await app.SeedDataAsync();
+
+        // 6. «·‹ Middleware
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "ECommerce API V1");
+                options.RoutePrefix = string.Empty;
             });
-
-            // 2. ≈⁄œ«œ Mapster ( √ﬂœ „‰  — Ì» «·”ÿÊ— œÌ)
-            var config = TypeAdapterConfig.GlobalSettings;
-            config.Scan(typeof(ProductProfile).Assembly);
-            builder.Services.AddSingleton(config);
-            builder.Services.AddScoped<IMapper, ServiceMapper>();
-
-            // 3.  ”ÃÌ· Œœ„«  «·„‘—Ê⁄ (Dependency Injection)
-            // „·«ÕŸ…:  √ﬂœ √‰ DataInitializer ﬂ·«” Ê·Ì” Interface ›Ì «·”ÿ— «·ﬁ«œ„
-            builder.Services.AddScoped<IDataInitializer, DataInitializer>();
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddScoped<IProductService, ProductService>();
-
-            var app = builder.Build();
-
-            // 4.  ‘€Ì· «·⁄„·Ì«  €Ì— «·„ “«„‰… (Async Operations)
-            await app.MigrateDatabaseAsync();
-            await app.SeedDataAsync();
-
-            // 5. ≈⁄œ«œ Middleware
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI(options =>
-                {
-                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "ECommerce API V1");
-                    options.RoutePrefix = string.Empty;
-                });
-            }
-
-            app.UseHttpsRedirection();
-            app.MapControllers();
-
-            // «” Œœ«„ RunAsync √›÷· ÿ«·„« «·„ÌÀÊœ Task
-            await app.RunAsync();
         }
+
+        app.UseHttpsRedirection();
+
+        // „Â„ Ãœ« ⁄‘«‰ «·’Ê—  › Õ
+        app.UseStaticFiles();
+
+        app.MapControllers();
+
+        await app.RunAsync();
     }
 }
