@@ -9,7 +9,7 @@ using ECommerceWeb.Extetions;
 using Mapster;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
-
+using StackExchange.Redis;
 namespace ECommerceWeb;
 
 public class Program
@@ -40,6 +40,12 @@ public class Program
         builder.Services.AddScoped<IDataInitializer, DataInitializer>();
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
         builder.Services.AddScoped<IProductService, ProductService>();
+        builder.Services.AddScoped<IBasketRepository, BasketRepository>();
+        builder.Services.AddScoped<IBasketService, BasketService>();
+        builder.Services.AddSingleton<IConnectionMultiplexer>(s =>
+        {
+            return ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnection")!);
+        });
 
         //  ”ÃÌ· «·‹ Resolver «·ÃœÌœ ﬂŒœ„…
         builder.Services.AddScoped<IPictureUrlResolver, PictureUrlResolver>();
