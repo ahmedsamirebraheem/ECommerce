@@ -1,4 +1,5 @@
-﻿using ECommerce.ServiceAbstraction;
+﻿using ECommerce.Presentation.Attributes;
+using ECommerce.ServiceAbstraction;
 using ECommerce.Shared;
 using ECommerce.Shared.ProductDtos;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,7 @@ namespace ECommerce.Presentation.Controllers;
 public class ProductController(IProductService productService) : ControllerBase
 {
     [HttpGet]
+    [RedisCache]
     //Get: BaseUrl/api/products
     public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProducts([FromQuery]ProductQueryParams queryParams)
     {
