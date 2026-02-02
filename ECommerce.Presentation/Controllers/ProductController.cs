@@ -25,7 +25,6 @@ public class ProductController(IProductService productService) : ControllerBase
     //Get: BaseUrl/api/products/id
     public async Task<ActionResult<ProductDTO?>> GetProductById(int id)
     {
-        throw new Exception("Test exception for Sentry logging");
         var product = await productService.GetByIdAcync(id);
             return Ok(product);
     }
