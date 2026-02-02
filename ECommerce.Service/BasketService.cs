@@ -1,5 +1,6 @@
 ﻿using ECommerce.Domain.Contracts;
 using ECommerce.Domain.Entities.BasketModule;
+using ECommerce.Service.Exceptions;
 using ECommerce.ServiceAbstraction;
 using ECommerce.Shared.BasketDtos;
 using MapsterMapper;
@@ -24,9 +25,8 @@ public class BasketService(IBasketRepository basketRepository, IMapper mapper) :
 
     public async Task<BasketDTO?> GetBasketAsync(string id)
     {
-        var basket = await basketRepository.GetBasketAsync(id);
+        var basket = await basketRepository.GetBasketAsync(id) ?? throw new BasketNotFoundException(id);
 
-        // بلاش نستخدم ! (null-forgiving) لأنها بتخبي المشكلة، الأفضل نرجع null صراحة
         return basket is null ? null : mapper.Map<BasketDTO>(basket);
     }
 

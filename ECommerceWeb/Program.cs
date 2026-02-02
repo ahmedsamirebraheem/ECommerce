@@ -7,8 +7,10 @@ using ECommerce.Service.MappingProfiles;
 using ECommerce.ServiceAbstraction;
 using ECommerceWeb.CustomMiddleWare;
 using ECommerceWeb.Extetions;
+using ECommerceWeb.Factory;
 using Mapster;
 using MapsterMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 namespace ECommerceWeb;
@@ -53,6 +55,10 @@ public class Program
         //  ”ÃÌ· «·‹ Resolver «·ÃœÌœ ﬂŒœ„…
         builder.Services.AddScoped<IPictureUrlResolver, PictureUrlResolver>();
 
+        builder.Services.Configure<ApiBehaviorOptions>(options =>
+        {
+            options.InvalidModelStateResponseFactory = ApiResponseFactory.GenerateApiValidationResponse;
+        });
         var app = builder.Build();
 
         

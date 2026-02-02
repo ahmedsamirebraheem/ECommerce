@@ -1,5 +1,6 @@
 ﻿using ECommerce.Domain.Contracts;
 using ECommerce.Domain.Entities.ProductModule;
+using ECommerce.Service.Exceptions;
 using ECommerce.Service.Specifications;
 using ECommerce.ServiceAbstraction;
 using ECommerce.Shared;
@@ -34,10 +35,7 @@ public class ProductService(
     public async Task<ProductDTO?> GetByIdAcync(int id)
     {
         var spec = new ProductWithBrandAndTypeSpecification(id);
-        var product = await unitOfWork.GerRepository<Product, int>().GetByIdAsync(spec);
-
-        if (product is null) return null;
-
+        var product = await unitOfWork.GerRepository<Product, int>().GetByIdAsync(spec) ?? throw new ProductNotFoundException(id);
         var dto = mapper.Map<ProductDTO>(product);
 
         // هنا بنصلح رابط الصورة للمنتج ده بس

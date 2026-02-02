@@ -2,6 +2,7 @@
 using ECommerce.ServiceAbstraction;
 using ECommerce.Shared;
 using ECommerce.Shared.ProductDtos;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ public class ProductController(IProductService productService) : ControllerBase
     public async Task<ActionResult<ProductDTO?>> GetProductById(int id)
     {
         var product = await productService.GetByIdAcync(id);
-            return Ok(product);
+        return Ok(product);
     }
 
     [HttpGet("brands")]
