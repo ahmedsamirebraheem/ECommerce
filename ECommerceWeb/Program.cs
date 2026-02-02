@@ -5,6 +5,7 @@ using ECommerce.Presistance.Repository;
 using ECommerce.Service;
 using ECommerce.Service.MappingProfiles;
 using ECommerce.ServiceAbstraction;
+using ECommerceWeb.CustomMiddleWare;
 using ECommerceWeb.Extetions;
 using Mapster;
 using MapsterMapper;
@@ -53,6 +54,10 @@ public class Program
         builder.Services.AddScoped<IPictureUrlResolver, PictureUrlResolver>();
 
         var app = builder.Build();
+
+        
+
+        app.UseMiddleware<ExceptionHandlerMiddleWare>();
 
         // 5.  ‘€Ì· «·„«ÌÃ—Ì‘‰ Ê«·‹ Seed
         await app.MigrateDatabaseAsync();
