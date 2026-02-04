@@ -4,9 +4,11 @@ using ECommerce.Service.Exceptions;
 using ECommerce.Service.Specifications;
 using ECommerce.ServiceAbstraction;
 using ECommerce.Shared;
+using ECommerce.Shared.Common_Result;
 using ECommerce.Shared.ProductDtos;
 using MapsterMapper;
 using System.Collections.Generic;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 
 namespace ECommerce.Service;
@@ -32,10 +34,13 @@ public class ProductService(
         return productDtos;
     }
 
-    public async Task<ProductDTO?> GetByIdAcync(int id)
+    public async Task<Result<ProductDTO>> GetByIdAcync(int id)
     {
         var spec = new ProductWithBrandAndTypeSpecification(id);
-        var product = await unitOfWork.GerRepository<Product, int>().GetByIdAsync(spec) ?? throw new ProductNotFoundException(id);
+        var product = await unitOfWork.GerRepository<Product, int>().GetByIdAsync(spec);
+        if(product == null)
+        return Error.NotFound("Product not found",$"Product with id:{id} not found");
+        
         var dto = mapper.Map<ProductDTO>(product);
 
         // هنا بنصلح رابط الصورة للمنتج ده بس

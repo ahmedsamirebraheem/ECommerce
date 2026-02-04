@@ -10,9 +10,7 @@ using System.Text;
 
 namespace ECommerce.Presentation.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
-public class ProductController(IProductService productService) : ControllerBase
+public class ProductController(IProductService productService) : ApiBaseController
 {
     [HttpGet]
     [RedisCache]
@@ -24,10 +22,10 @@ public class ProductController(IProductService productService) : ControllerBase
     }
     [HttpGet("{id}")]
     //Get: BaseUrl/api/products/id
-    public async Task<ActionResult<ProductDTO?>> GetProductById(int id)
+    public async Task<ActionResult<ProductDTO>> GetProductById(int id)
     {
-        var product = await productService.GetByIdAcync(id);
-        return Ok(product);
+        var result = await productService.GetByIdAcync(id);
+        return HandleResult<ProductDTO>(result);
     }
 
     [HttpGet("brands")]
