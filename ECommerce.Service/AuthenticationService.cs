@@ -72,7 +72,7 @@ public class AuthenticationService(UserManager<ApplicationUser> userManager, ICo
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token= new JwtSecurityToken(
-            issuer: configuration["JwtOptions:Issure"],
+            issuer: configuration["JwtOptions:Issuer"],
             audience: configuration["JwtOptions:Audience"],
             expires: DateTime.Now.AddHours(1),
             claims: claims,

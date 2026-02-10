@@ -14,10 +14,13 @@ using ECommerceWeb.Factory;
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
+using System.Text;
 using AuthenticationService = ECommerce.Service.AuthenticationService;
 using IAuthenticationService = ECommerce.ServiceAbstraction.IAuthenticationService;
 namespace ECommerceWeb;
@@ -78,6 +81,24 @@ public class Program
         builder.Services.AddIdentityCore<ApplicationUser>().AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<StoreIdentityDbContext>();
 
+        builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(options=>
+        {
+            options.SaveToken = true;
+            options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidIssuer = builder.Configuration["JwtOptions:Issuer"],
+                    ValidAudience = builder.Configuration["JwtOptions:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtOptions:SecretKey"]!)),
+            };
+        });
+
         var app = builder.Build();
 
         
@@ -105,7 +126,8 @@ public class Program
 
         // „Â„ Ãœ« ⁄‘«‰ «·’Ê—  › Õ
         app.UseStaticFiles();
-
+        app.UseAuthentication(); 
+        app.UseAuthorization();
         app.MapControllers();
 
         await app.RunAsync();
