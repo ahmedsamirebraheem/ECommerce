@@ -1,6 +1,9 @@
 using ECommerce.Domain.Contracts;
+using ECommerce.Domain.Entities.IdentityModule;
 using ECommerce.Presistance.Data.DataSeed;
 using ECommerce.Presistance.Data.DbContexts;
+using ECommerce.Presistance.IdentityData.DataSeed;
+using ECommerce.Presistance.IdentityData.DbContext;
 using ECommerce.Presistance.Repository;
 using ECommerce.Service;
 using ECommerce.Service.MappingProfiles;
@@ -10,6 +13,7 @@ using ECommerceWeb.Extetions;
 using ECommerceWeb.Factory;
 using Mapster;
 using MapsterMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
@@ -40,7 +44,9 @@ public class Program
         builder.Services.AddScoped<IMapper, ServiceMapper>();
 
         // 4.  ”ÃÌ· Œœ„«  «·‹ Dependency Injection (›ﬂ «·ﬂÊ„‰  Â‰«)
-        builder.Services.AddScoped<IDataInitializer, DataInitializer>();
+        builder.Services.AddKeyedScoped<IDataInitializer, DataInitializer>("Default");
+        builder.Services.AddKeyedScoped<IDataInitializer, IdentityDataInitializer>("Identity");
+
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
         builder.Services.AddScoped<IProductService, ProductService>();
         builder.Services.AddScoped<IBasketRepository, BasketRepository>();
@@ -59,6 +65,15 @@ public class Program
         {
             options.InvalidModelStateResponseFactory = ApiResponseFactory.GenerateApiValidationResponse;
         });
+
+        builder.Services.AddDbContext<StoreIdentityDbContext>(options =>
+        {
+            options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
+        });
+
+        builder.Services.AddIdentityCore<ApplicationUser>().AddRoles<IdentityRole>()
+            .AddEntityFrameworkStores<StoreIdentityDbContext>();
+
         var app = builder.Build();
 
         
@@ -67,7 +82,9 @@ public class Program
 
         // 5.  ‘€Ì· «·„«ÌÃ—Ì‘‰ Ê«·‹ Seed
         await app.MigrateDatabaseAsync();
+        await app.MigrateIdentityDatabaseAsync();
         await app.SeedDataAsync();
+        await app.SeedIdentityAsync();
 
         // 6. «·‹ Middleware
         if (app.Environment.IsDevelopment())
