@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace ECommerce.Presentation.Controllers;
 
@@ -24,6 +26,26 @@ public class AuthenticationController(IAuthenticationService authenticationServi
     public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
     {
         var result = await authenticationService.RegisterAsync(registerDto);
+        return HandleResult(result);
+    }
+
+    //check email
+    //Get : baseUrl/api/authentication/emailexists
+    [HttpGet("emailexists")]
+    public async Task<ActionResult<bool>> CheckEmail(string email)
+    {
+        var result = await authenticationService.CheckEmailAsync(email);
+        return Ok(result);
+    }
+
+    //get user by email
+    //Get : baseUrl/api/authentication/userbyemail
+    [HttpGet("currentUser")]
+    [Authorize]
+    public async Task<ActionResult<UserDto>> GetCurrentUser()
+    {
+        var email = User.FindFirstValue(ClaimTypes.Email);
+        var result = await authenticationService.GetUserByEmailAsync(email!);
         return HandleResult(result);
     }
 }

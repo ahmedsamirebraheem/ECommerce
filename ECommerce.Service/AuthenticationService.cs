@@ -15,6 +15,22 @@ namespace ECommerce.Service;
 
 public class AuthenticationService(UserManager<ApplicationUser> userManager, IConfiguration configuration) : IAuthenticationService
 {
+    public async Task<bool> CheckEmailAsync(string email)
+    {
+        var user = await userManager.FindByEmailAsync(email);
+        return user != null;
+    }
+
+    public async Task<Result<UserDto>> GetUserByEmailAsync(string email)
+    {
+        var user = await userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            return Error.NotFound("User not found");
+        }
+        return new UserDto(user.Email!, user.DisplayName, await CreateTokenAsync(user));
+    }
+
     public async Task<Result<UserDto>> LoginAsync(LoginDto loginDto)
     {
         var user = await userManager.FindByEmailAsync(loginDto.Email);
