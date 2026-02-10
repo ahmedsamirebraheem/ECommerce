@@ -13,10 +13,13 @@ using ECommerceWeb.Extetions;
 using ECommerceWeb.Factory;
 using Mapster;
 using MapsterMapper;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
+using AuthenticationService = ECommerce.Service.AuthenticationService;
+using IAuthenticationService = ECommerce.ServiceAbstraction.IAuthenticationService;
 namespace ECommerceWeb;
 
 public class Program
@@ -70,6 +73,7 @@ public class Program
         {
             options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
         });
+        builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
         builder.Services.AddIdentityCore<ApplicationUser>().AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<StoreIdentityDbContext>();
