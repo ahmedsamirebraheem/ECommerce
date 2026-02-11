@@ -4,6 +4,7 @@ using ECommerce.Presistance.Data.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ECommerce.Presistance.Data.Migrations
 {
     [DbContext(typeof(StoreDbContext))]
-    partial class StoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260210192316_Order module")]
+    partial class Ordermodule
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,7 +54,7 @@ namespace ECommerce.Presistance.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DeliveryMethods");
+                    b.ToTable("DeliveryMethod");
                 });
 
             modelBuilder.Entity("ECommerce.Domain.Entities.OrderModule.Order", b =>

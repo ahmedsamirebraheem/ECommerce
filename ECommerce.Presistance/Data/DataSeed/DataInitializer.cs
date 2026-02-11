@@ -1,8 +1,10 @@
 ﻿using ECommerce.Domain.Contracts;
 using ECommerce.Domain.Entities;
+using ECommerce.Domain.Entities.OrderModule;
 using ECommerce.Domain.Entities.ProductModule;
 using ECommerce.Presistance.Data.DbContexts;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 using System.Text.Json;
 
 namespace ECommerce.Presistance.Data.DataSeed;
@@ -39,6 +41,12 @@ public class DataInitializer(StoreDbContext dbContext) : IDataInitializer
                 await SeedDataFromJson<Product, int>("products.json", dbContext.Products);
                 await dbContext.SaveChangesAsync();
             }
+
+            if (!await dbContext.DeliveryMethods.AnyAsync())
+            {
+                await SeedDataFromJson<DeliveryMethod, int>("delivery.json", dbContext.DeliveryMethods);
+                await dbContext.SaveChangesAsync();
+            }
         }
         catch (Exception ex)
         {
@@ -49,27 +57,36 @@ public class DataInitializer(StoreDbContext dbContext) : IDataInitializer
     }
     private static async Task SeedDataFromJson<T, Tkey>(string fileName, DbSet<T> dbset) where T : BaseEntity<Tkey>
     {
-        // استخدام Path.Combine أفضل للمسارات
-        var filePath = Path.Combine("..", "ECommerce.Presistance", "Data", "DataSeed", "JSONFiles", fileName);
+        // 1. هنجيب المسار اللي الكود شغال فيه حالياً (bin folder)
+        var assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+        // 2. هنبني المسار بناءً على هيكل المشروع عندك
+        // لو الـ JSONFiles موجودة جوه الـ Persistence، تأكد إنها بتتعمل لها Copy to Output
+        var filePath = Path.Combine(assemblyPath!, "Data", "DataSeed", "JSONFiles", fileName);
+
+        // لو لسه مش عارف تظبط المسار، استخدم الحل "القوي" ده للتطوير فقط:
+        // var filePath = @"C:\Users\Samir\source\repos\ECommerce\ECommerce.Presistance\Data\DataSeed\JSONFiles\" + fileName;
 
         if (!File.Exists(filePath))
-            throw new FileNotFoundException($"File {fileName} does not exist at {filePath}");
+        {
+            Console.WriteLine($"[WARNING] File {fileName} NOT FOUND at: {filePath}");
+            return;
+        }
 
         try
         {
             using var dataStream = File.OpenRead(filePath);
-
-            // استخدام الـ _jsonOptions الثابتة هنا
             var data = await JsonSerializer.DeserializeAsync<List<T>>(dataStream, _jsonOptions);
 
             if (data is not null && data.Count != 0)
             {
                 await dbset.AddRangeAsync(data);
+                Console.WriteLine($"[SUCCESS] Seeded {data.Count} items from {fileName}");
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error while reading json file {fileName}: {ex.Message}");
+            Console.WriteLine($"[ERROR] reading json file {fileName}: {ex.Message}");
         }
     }
 }

@@ -7,6 +7,28 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Data\DataSeed\JSONFiles\brands.json" />
+    <None Remove="Data\DataSeed\JSONFiles\delivery.json" />
+    <None Remove="Data\DataSeed\JSONFiles\products.json" />
+    <None Remove="Data\DataSeed\JSONFiles\types.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Data\DataSeed\JSONFiles\brands.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Data\DataSeed\JSONFiles\delivery.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Data\DataSeed\JSONFiles\products.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Data\DataSeed\JSONFiles\types.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.2" />
     <PackageReference Include="StackExchange.Redis" Version="2.10.1" />
   </ItemGroup>
