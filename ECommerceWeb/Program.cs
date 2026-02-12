@@ -55,6 +55,7 @@ public class Program
 
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
         builder.Services.AddScoped<IProductService, ProductService>();
+        builder.Services.AddScoped<IOrderService, OrderService>();
         builder.Services.AddScoped<IBasketRepository, BasketRepository>();
         builder.Services.AddScoped<IBasketService, BasketService>();
         builder.Services.AddScoped<ICacheRepository, CacheRepository>();
@@ -66,6 +67,7 @@ public class Program
 
         // ÊÓÌíá ÇáÜ Resolver ÇáÌÏíÏ ßÎÏãÉ
         builder.Services.AddScoped<IPictureUrlResolver, PictureUrlResolver>();
+        //builder.Services.AddScoped<IPictureUrlResolver, OrderItemPictureUrlResolver>();
 
         builder.Services.Configure<ApiBehaviorOptions>(options =>
         {
@@ -126,6 +128,7 @@ public class Program
 
         // ãåã ÌÏÇğ ÚÔÇä ÇáÕæÑ ÊİÊÍ
         app.UseStaticFiles();
+        app.UseRouting();
         app.UseAuthentication(); 
         app.UseAuthorization();
         app.MapControllers();

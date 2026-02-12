@@ -10,16 +10,16 @@ namespace ECommerce.Presistance.Repository;
 
 public class GenericRepository<T,Tkey>(StoreDbContext dbContext) : IGenericRepository<T,Tkey> where T : BaseEntity<Tkey>
 {
-    public async Task AddAcync(T entity) => await dbContext.Set<T>().AddAsync(entity);
+    public async Task AddAsync(T entity) => await dbContext.Set<T>().AddAsync(entity);
 
 
-    public async Task<IEnumerable<T>> GetAllAcync() => await dbContext.Set<T>().ToListAsync();
+    public async Task<IEnumerable<T>> GetAllAsync() => await dbContext.Set<T>().ToListAsync();
 
-    public async Task<IEnumerable<T>> GetAllAcync(ISpecifications<T, Tkey> specifications)
+    public async Task<IEnumerable<T>> GetAllAsync(ISpecifications<T, Tkey> specifications)
     {
         return await SpecificationEvaluator.CreateQuery(dbContext.Set<T>(), specifications).ToListAsync();
     }
-    public async Task<T?> GetByIdAcync(Tkey id) => await dbContext.Set<T>().FindAsync(id);
+    public async Task<T?> GetByIdAsync(Tkey id) => await dbContext.Set<T>().FindAsync(id);
     public async Task<T?> GetByIdAsync(ISpecifications<T, Tkey> specifications)
     {
         return await SpecificationEvaluator.CreateQuery<T, Tkey>(dbContext.Set<T>(), specifications)

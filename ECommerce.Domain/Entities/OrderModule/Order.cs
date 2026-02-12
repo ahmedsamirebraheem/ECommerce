@@ -9,7 +9,7 @@ public class Order : BaseEntity<Guid>
     public string UserEmail { get; set; } = null!;
     public DateTimeOffset OrderDate { get; set; } = DateTimeOffset.Now;
     public OrderStatus OrderStatus { get; set; } = OrderStatus.Pending;
-    public OrderAddress OrderAddress { get; set; } = null!;
+    public OrderAddress Address { get; set; } = null!;
     public DeliveryMethod DeliveryMethod { get; set; } = null!;
     public int DeliveryMethodId { get; set; }
     public ICollection<OrderItem> Item { get; set; } = [];

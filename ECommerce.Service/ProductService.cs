@@ -21,7 +21,7 @@ public class ProductService(
     public async Task<IEnumerable<ProductDTO>> GetAllProductsAcync(ProductQueryParams queryParams)
     {
         var spec = new ProductWithBrandAndTypeSpecification(queryParams);
-        var products = await unitOfWork.GerRepository<Product, int>().GetAllAcync(spec);
+        var products = await unitOfWork.GerRepository<Product, int>().GetAllAsync(spec);
 
         var productDtos = mapper.Map<IEnumerable<ProductDTO>>(products);
 
@@ -51,13 +51,13 @@ public class ProductService(
 
     public async Task<IEnumerable<BrandDTO>> GetAllBrandsAcync()
     {
-        var brands = await unitOfWork.GerRepository<ProductBrand, int>().GetAllAcync();
+        var brands = await unitOfWork.GerRepository<ProductBrand, int>().GetAllAsync();
         return mapper.Map<IEnumerable<BrandDTO>>(brands);
     }
 
     public async Task<IEnumerable<TypeDTO>> GetAllTypesAcync()
     {
-        var types = await unitOfWork.GerRepository<ProductType, int>().GetAllAcync();
+        var types = await unitOfWork.GerRepository<ProductType, int>().GetAllAsync();
         return mapper.Map<IEnumerable<TypeDTO>>(types);
     }
 }
